@@ -88,7 +88,7 @@ func buildTransportServer(config Config) (transport.Server, error) {
 	trans := transport.NewTransport(strings.ToLower(string(config.NetAddr.Transport)))
 	switch trans {
 	case transport.UDP, transport.UDP4, transport.UDP6:
-		return transport.NewUDPServer(trans, config.NetAddr.Endpoint)
+		return transport.NewUDPServer(trans, config.NetAddr.Endpoint, config.SocketBufferSize)
 	case transport.TCP, transport.TCP4, transport.TCP6:
 		return transport.NewTCPServer(trans, config.NetAddr.Endpoint)
 	case transport.UDS:

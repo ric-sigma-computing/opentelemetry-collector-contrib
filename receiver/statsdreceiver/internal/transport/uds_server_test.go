@@ -74,18 +74,16 @@ func Test_NewUDSServer_SocketBufferSize(t *testing.T) {
 
 	// Verify the buffer was set by checking the underlying connection.
 	udsServer := server.(*udsServer)
-	if uc, ok := udsServer.packetConn.(*net.UnixConn); ok {
-		raw, err := uc.SyscallConn()
-		require.NoError(t, err)
-		var actual int
-		err = raw.Control(func(fd uintptr) {
-			actual, _ = syscall.GetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_RCVBUF)
-		})
-		require.NoError(t, err)
-		// The kernel may round up, so just check it's at least what we asked for.
-		assert.GreaterOrEqual(t, actual, bufferSize,
-			"SO_RCVBUF should be at least the requested size")
-	}
+	raw, err := udsServer.packetConn.(*net.UnixConn).SyscallConn()
+	require.NoError(t, err)
+	var actual int
+	err = raw.Control(func(fd uintptr) {
+		actual, _ = syscall.GetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_RCVBUF)
+	})
+	require.NoError(t, err)
+	// The kernel may round up (doubles the value), so just check it's at least what we asked for.
+	assert.GreaterOrEqual(t, actual, bufferSize,
+		"SO_RCVBUF should be at least the requested size")
 }
 
 func Test_NewUDSServer_DefaultSocketBufferSize(t *testing.T) {

@@ -28,11 +28,9 @@ func NewUDSServer(transport Transport, socketPath string, socketPermissions os.F
 	}
 
 	if socketBufferSize > 0 {
-		if uc, ok := conn.(*net.UnixConn); ok {
-			if err := uc.SetReadBuffer(socketBufferSize); err != nil {
-				conn.Close()
-				return nil, fmt.Errorf("setting socket buffer size: %w", err)
-			}
+		if err := setSocketBuffer(conn, socketBufferSize); err != nil {
+			conn.Close()
+			return nil, fmt.Errorf("setting socket buffer size: %w", err)
 		}
 	}
 
