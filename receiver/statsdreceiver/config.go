@@ -33,7 +33,9 @@ type Config struct {
 	// Will only be used when transport set to 'unixgram'.
 	SocketPermissions os.FileMode `mapstructure:"socket_permissions"`
 	// SocketBufferSize sets SO_RCVBUF on the listening socket (bytes).
-	// Only used when transport is 'unixgram'. 0 = OS default.
+	// Applies to 'udp' and 'unixgram' transports. 0 = OS default.
+	// On Linux with CAP_NET_ADMIN, SO_RCVBUFFORCE is used to bypass
+	// the net.core.rmem_max limit.
 	SocketBufferSize int `mapstructure:"socket_buffer_size"`
 }
 

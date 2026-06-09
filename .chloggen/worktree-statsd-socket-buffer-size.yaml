@@ -7,7 +7,7 @@ change_type: "enhancement"
 component: "receiver/statsd"
 
 # A brief description of the change.  Surround your text with quotes ("") if it needs to start with a backtick (`).
-note: "`receiver/statsd` Add support for configuring socket buffer size"
+note: "`receiver/statsd` Add socket_buffer_size support for UDP and unixgram transports with SO_RCVBUFFORCE on Linux"
 
 # Mandatory: One or more tracking issues related to the change. You can use the PR number here if no issue exists.
 issues: [47379]

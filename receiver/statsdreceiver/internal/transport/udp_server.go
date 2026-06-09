@@ -16,7 +16,7 @@ type udpServer struct {
 var _ Server = (*udpServer)(nil)
 
 // NewUDPServer creates a transport.Server using UDP as its transport.
-func NewUDPServer(transport Transport, address string) (Server, error) {
+func NewUDPServer(transport Transport, address string, socketBufferSize int) (Server, error) {
 	if !transport.IsPacketTransport() {
 		return nil, fmt.Errorf("NewUDPServer with %s: %w", transport.String(), ErrUnsupportedPacketTransport)
 	}
@@ -24,6 +24,13 @@ func NewUDPServer(transport Transport, address string) (Server, error) {
 	conn, err := net.ListenPacket(transport.String(), address)
 	if err != nil {
 		return nil, fmt.Errorf("starting to listen %s socket: %w", transport.String(), err)
+	}
+
+	if socketBufferSize > 0 {
+		if err := setSocketBuffer(conn, socketBufferSize); err != nil {
+			conn.Close()
+			return nil, fmt.Errorf("setting socket buffer size: %w", err)
+		}
 	}
 
 	return &udpServer{
